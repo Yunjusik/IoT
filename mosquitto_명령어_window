@@ -22,3 +22,13 @@ mosquitto_pub -t IoT -m " {\"나이\":29살, \"성별\":남성}"
 
 Arduino(WeMos) 개발환경 구축
 
+아두이노 WeMos Di R1 -> MQTT
+DHT11센서 데이터를 MQTT 서버로 발행하는 부분. 전송시 WeMos에서 보낼때 MQTT의 IP 주소로보냄.
+
+pub -> sub topic :: DHT11
+메세지 형식 JSON
+ex) {"tmp":30,"hum":55}
+
+
+
+
