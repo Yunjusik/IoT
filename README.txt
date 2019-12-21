@@ -1,2 +1,2 @@
-IoT project with Raspberry Pi
+IoT project with Raspberry Pi.
 
