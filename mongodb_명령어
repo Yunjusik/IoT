@@ -1,0 +1,19 @@
+
+1. mongDB 서버 구동
+
+cmd창
+각자 본인 컴퓨터의 mongodb\bin폴더로 접속 -> [mongod --dbpath C:\각자경로\mongodb\var] 입력
+
+입력후 커맨드보면 waiting for connections on port 27017 뜸
+
+2. MongoDB 접속
+cmd
+C:\각자경로\mongodb\bin> mongo
+
+
+3. MongoDB 종료
+- 1. use admin
+switched to db admin
+- 2. db.shutdownServer()
+
+
