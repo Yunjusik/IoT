@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Insert title here</title>
+<script type="text/javascript" src="/socket.io/socket.io.js"></script>
+<script src="http://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script type="text/javascript">
+   var socket=null;
+   var timer=null;
+   $(document).ready(function(){ //브라우저가 준비가되면 바로 3000 port로 연결하고
+	   socket=io.connect(); // 
+	   // Node.js보낸 데이터를 수신하는 부분
+	   // socket.io는 lib에 안보이지만 내부적으로 내재되어있음
+	   socket.on("socket_evt_mqtt", function(data){ //socket_evt_mqtt라는 이벤트 등록(node.js로부터 이벤트 수신을 위해)
+		   data=JSON.parse(data); //수신데이터를 JSON으로 바꾸고
+		   $(".mqttlist").html('<li>'+data.tmp+'('+data.hum+'%)'+'</li>');
+		   //수신된 JSON 파일 중 data.tmp/ data.hum에 해당하는 내용을 더해 mqttlist에 넣고, 웹페이지에 출력하는 용도로 사용
+	   });
+	   if(timer==null){
+		   timer=window.setInterval("timer1()", 1000);
+		   // 1초에 한번씩 node.js (WWW)에게 요청하기위해 timer1 함수 실행
+	   }	   
+   });
+  function timer1(){
+	  socket.emit("socket_evt_mqtt", JSON.stringify({}));
+	  console.log("---------");
+	  //timer 함수는 socket.emit을 node.js쪽으로 주기적으로 날림
+	  //과정요약: www파트에서는 socket_evt_mqtt 이벤트를 수신하고, 온도센서정보를 모아 다시 socket_evt_mqtt 이벤트를 발행
+	  //html에서는 해당 이벤트를 꺼내 json파일로넣고  웹으로 최신 온도/습도를 띄워줌
+  }  
+  function ledOnOff(value){
+      // {"led":1}, {"led":2}
+      socket.emit("socket_evt_led", JSON.stringify({led:Number(value)}));
+  }
+  function ajaxledOnOff(value){
+      if(value=="1") var value="on";
+      else if(value=="2") var value="off";
+      $.ajax({
+         url:"http://172.30.1.15:3000/devices/led/"+value,
+         type:"post",
+         success : ledStatus,
+         error : function(){ alert("error");}
+     });
+  }
+ function ledStatus(obj){
+	 $("#led").html("<font color='red'>"+obj.led+"</font> 되었습니다.");	 
+ }
+</script>
+</head>
+<body>
+MQTT을 통한 센서정보 모니터링
+<div id="msg">  
+   <div id="mqtt_logs">
+      <ul class="mqttlist"></ul>
+   </div>
+   <h1>socket을 통한 LED 컨트롤 </h1>
+   <button onclick="ledOnOff(1)">ON</button>
+   <button onclick="ledOnOff(2)">OFF</button>
+   
+
+</div>
+</body>
+</html>
